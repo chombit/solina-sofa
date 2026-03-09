@@ -1,16 +1,22 @@
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Phone, ArrowLeft, Check } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Check, Heart } from "lucide-react";
 import { products } from "@/data/products";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import PageTransition from "@/components/PageTransition";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useToast } from "@/hooks/use-toast";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const { toast } = useToast();
 
   if (!product) {
     return (
@@ -24,12 +30,13 @@ const ProductDetail = () => {
   }
 
   const activeColor = selectedColor || product.colors[0];
-  const whatsappMessage = encodeURIComponent(
-    `Hi Solina! I'm interested in the "${product.name}" (${product.price})${selectedColor ? ` in ${selectedColor}` : ""}. Can you share more details?`
-  );
-
-  // Related products
+  const inWishlist = isInWishlist(product.id);
   const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 3);
+
+  const handleAddToCart = () => {
+    addToCart(product, activeColor);
+    toast({ title: "Added to cart!", description: `${product.name} in ${activeColor}` });
+  };
 
   return (
     <PageTransition>
@@ -47,7 +54,7 @@ const ProductDetail = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Image with zoom effect */}
+            {/* Image */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -62,14 +69,22 @@ const ProductDetail = () => {
                 }`}
                 onLoad={() => setImageLoaded(true)}
               />
-              {!imageLoaded && (
-                <div className="absolute inset-0 bg-card animate-pulse" />
-              )}
+              {!imageLoaded && <div className="absolute inset-0 bg-card animate-pulse" />}
               <div className="absolute top-4 left-4">
                 <span className="bg-gold text-accent-foreground text-xs font-semibold px-3 py-1.5 rounded-full">
                   {product.category}
                 </span>
               </div>
+              <button
+                onClick={() => toggleWishlist(product)}
+                className={`absolute top-4 right-4 h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  inWishlist
+                    ? "bg-destructive text-destructive-foreground"
+                    : "bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-destructive"
+                }`}
+              >
+                <Heart className={`h-5 w-5 ${inWishlist ? "fill-current" : ""}`} />
+              </button>
             </motion.div>
 
             {/* Details */}
@@ -114,12 +129,26 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              <a href={`https://wa.me/251900000000?text=${whatsappMessage}`} target="_blank" rel="noopener noreferrer">
-                <Button variant="whatsapp" size="lg" className="gap-2 w-full sm:w-auto text-base px-8 py-3 h-auto group">
-                  <Phone className="h-5 w-5 group-hover:animate-pulse" />
-                  Order via WhatsApp
+              <div className="flex gap-3">
+                <Button
+                  variant="gold"
+                  size="lg"
+                  className="gap-2 flex-1 sm:flex-none text-base px-8 py-3 h-auto group"
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingCart className="h-5 w-5 group-hover:animate-pulse" />
+                  Add to Cart
                 </Button>
-              </a>
+                <Button
+                  variant={inWishlist ? "destructive" : "outline"}
+                  size="lg"
+                  className="gap-2 px-6 py-3 h-auto"
+                  onClick={() => toggleWishlist(product)}
+                >
+                  <Heart className={`h-5 w-5 ${inWishlist ? "fill-current" : ""}`} />
+                  {inWishlist ? "Saved" : "Wishlist"}
+                </Button>
+              </div>
             </motion.div>
           </div>
 
