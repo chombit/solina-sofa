@@ -14,6 +14,9 @@ const Products = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"default" | "price-low" | "price-high">("default");
+  const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
+  const { toast } = useToast();
 
   const filtered = useMemo(() => {
     let result = activeCategory === "All"
