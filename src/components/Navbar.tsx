@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, ShoppingCart, Heart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 
 const navLinks = [
   { label: "Home", path: "/" },
@@ -16,6 +18,8 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { totalItems, setIsCartOpen } = useCart();
+  const { items: wishlistItems } = useWishlist();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -65,8 +69,35 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
-          <a href="https://wa.me/251900000000" target="_blank" rel="noopener noreferrer">
+        <div className="hidden md:flex items-center gap-1">
+          <Link to="/account" className="relative p-2 rounded-full hover:bg-secondary transition-colors">
+            <Heart className="h-5 w-5 text-muted-foreground hover:text-gold transition-colors" />
+            {wishlistItems.length > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-gold text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                {wishlistItems.length}
+              </span>
+            )}
+          </Link>
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="relative p-2 rounded-full hover:bg-secondary transition-colors"
+          >
+            <ShoppingCart className="h-5 w-5 text-muted-foreground hover:text-gold transition-colors" />
+            {totalItems > 0 && (
+              <motion.span
+                key={totalItems}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-gold text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center"
+              >
+                {totalItems}
+              </motion.span>
+            )}
+          </button>
+          <Link to="/auth" className="p-2 rounded-full hover:bg-secondary transition-colors">
+            <User className="h-5 w-5 text-muted-foreground hover:text-gold transition-colors" />
+          </Link>
+          <a href="https://wa.me/251900000000" target="_blank" rel="noopener noreferrer" className="ml-2">
             <Button variant="whatsapp" size="sm" className="gap-2">
               <Phone className="h-4 w-4" />
               WhatsApp
@@ -74,10 +105,23 @@ const Navbar = () => {
           </a>
         </div>
 
-        {/* Mobile toggle */}
-        <button className="md:hidden text-foreground" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        {/* Mobile right icons */}
+        <div className="flex md:hidden items-center gap-1">
+          <button
+            onClick={() => setIsCartOpen(true)}
+            className="relative p-2"
+          >
+            <ShoppingCart className="h-5 w-5 text-foreground" />
+            {totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-gold text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </button>
+          <button className="text-foreground p-2" onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -109,8 +153,18 @@ const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
+              <div className="flex gap-3 mt-2">
+                <Link to="/account" onClick={() => setIsOpen(false)} className="flex-1">
+                  <Button variant="outline" className="w-full gap-2">
+                    <User className="h-4 w-4" /> Account
+                  </Button>
+                </Link>
+                <Link to="/auth" onClick={() => setIsOpen(false)} className="flex-1">
+                  <Button variant="gold" className="w-full">Sign In</Button>
+                </Link>
+              </div>
               <a href="https://wa.me/251900000000" target="_blank" rel="noopener noreferrer">
-                <Button variant="whatsapp" className="w-full mt-2 gap-2">
+                <Button variant="whatsapp" className="w-full gap-2">
                   <Phone className="h-4 w-4" />
                   Order via WhatsApp
                 </Button>
