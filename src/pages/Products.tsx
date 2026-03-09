@@ -160,6 +160,21 @@ const Products = () => {
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        {/* Wishlist button */}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleWishlist(product);
+                          }}
+                          className={`absolute top-3 right-3 h-9 w-9 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${
+                            isInWishlist(product.id)
+                              ? "bg-destructive text-destructive-foreground"
+                              : "bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100"
+                          }`}
+                        >
+                          <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-current" : ""}`} />
+                        </button>
                         {/* Color swatches preview */}
                         <div className="absolute bottom-4 left-4 flex gap-1.5 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                           {product.colors.slice(0, 3).map((color) => (
@@ -178,9 +193,22 @@ const Products = () => {
                         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.description}</p>
                         <div className="flex items-center justify-between">
                           <p className="font-body text-xl font-bold text-gold-dark">{product.price}</p>
-                          <Button variant="gold" size="sm" className="group-hover:shadow-md transition-shadow">
-                            View Details
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="gold"
+                              size="sm"
+                              className="gap-1"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                addToCart(product);
+                                toast({ title: "Added to cart!", description: product.name });
+                              }}
+                            >
+                              <ShoppingCart className="h-3.5 w-3.5" />
+                              Add
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </Link>
