@@ -1,11 +1,14 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Phone, Search, SlidersHorizontal } from "lucide-react";
+import { Phone, Search, SlidersHorizontal, ShoppingCart, Heart } from "lucide-react";
 import { products, categories } from "@/data/products";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageTransition from "@/components/PageTransition";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Products = () => {
   const [activeCategory, setActiveCategory] = useState("All");
