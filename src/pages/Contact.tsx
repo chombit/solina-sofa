@@ -1,26 +1,29 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, MapPin, Clock, Send } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageTransition from "@/components/PageTransition";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Contact = () => {
+  const { t } = useLanguage();
   const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
   const [sending, setSending] = useState(false);
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.phone.trim() || !form.message.trim()) {
-      toast.error("Please fill in all required fields.");
+      toast({ title: t("contact.fillRequired"), variant: "destructive" });
       return;
     }
     setSending(true);
     setTimeout(() => {
       const msg = encodeURIComponent(`Name: ${form.name}\nPhone: ${form.phone}\nEmail: ${form.email}\nMessage: ${form.message}`);
-      window.open(`https://wa.me/251911233391?text=${msg}`, "_blank");
-      toast.success("Opening WhatsApp...");
+      window.open(`https://t.me/solinahomes?text=${msg}`, "_blank");
+      toast({ title: t("contact.sentSuccess"), description: t("contact.sentDesc") });
       setSending(false);
     }, 500);
   };
@@ -38,7 +41,7 @@ const Contact = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-gold text-sm tracking-[0.3em] uppercase font-medium mb-3"
             >
-              Get In Touch
+              {t("contact.badge")}
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -46,7 +49,7 @@ const Contact = () => {
               transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl font-display font-bold"
             >
-              Contact Us
+              {t("contact.title")}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -54,7 +57,7 @@ const Contact = () => {
               transition={{ delay: 0.2 }}
               className="text-primary-foreground/70 mt-4 max-w-lg mx-auto"
             >
-              Visit our showroom or reach out — we'd love to hear from you.
+              {t("contact.desc")}
             </motion.p>
           </div>
         </section>
@@ -65,55 +68,55 @@ const Contact = () => {
               {/* Contact Form */}
               <AnimatedSection direction="left">
                 <div className="bg-card border border-border rounded-2xl p-8 shadow-lg">
-                  <h2 className="font-display text-2xl font-bold text-foreground mb-6">Send Us a Message</h2>
+                  <h2 className="font-display text-2xl font-bold text-foreground mb-6">{t("contact.formTitle")}</h2>
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="group">
-                      <label className="text-sm font-medium text-foreground mb-1.5 block">Name *</label>
+                      <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contact.name")}</label>
                       <input
                         type="text"
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-background border border-input text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-300"
-                        placeholder="Your full name"
+                        placeholder={t("contact.namePlaceholder")}
                         maxLength={100}
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-1.5 block">Phone *</label>
+                      <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contact.phone")}</label>
                       <input
                         type="tel"
                         value={form.phone}
                         onChange={(e) => setForm({ ...form, phone: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-background border border-input text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-300"
-                        placeholder="+251 9XX XXX XXX"
+                        placeholder={t("contact.phonePlaceholder")}
                         maxLength={20}
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-1.5 block">Email</label>
+                      <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contact.email")}</label>
                       <input
                         type="email"
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl bg-background border border-input text-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-300"
-                        placeholder="your@email.com"
+                        placeholder={t("contact.emailPlaceholder")}
                         maxLength={255}
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-foreground mb-1.5 block">Message *</label>
+                      <label className="text-sm font-medium text-foreground mb-1.5 block">{t("contact.message")}</label>
                       <textarea
                         value={form.message}
                         onChange={(e) => setForm({ ...form, message: e.target.value })}
                         rows={4}
                         className="w-full px-4 py-3 rounded-xl bg-background border border-input text-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none transition-all duration-300"
-                        placeholder="Tell us about your furniture needs..."
+                        placeholder={t("contact.messagePlaceholder")}
                         maxLength={1000}
                       />
                     </div>
                     <Button type="submit" variant="gold" size="lg" className="w-full gap-2 group" disabled={sending}>
                       <Send className="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                      {sending ? "Sending..." : "Send via WhatsApp"}
+                      {sending ? t("contact.sending") : t("contact.sendBtn")}
                     </Button>
                   </form>
                 </div>
@@ -122,15 +125,15 @@ const Contact = () => {
               {/* Contact Info */}
               <AnimatedSection direction="right" className="space-y-8">
                 <div>
-                  <h2 className="font-display text-2xl font-bold text-foreground mb-6">Showroom Locations</h2>
+                  <h2 className="font-display text-2xl font-bold text-foreground mb-6">{t("contact.locations")}</h2>
                   <div className="space-y-6">
                     {/* Gotera Branch - Main */}
                     <div className="bg-card border border-border rounded-xl p-5">
-                      <h3 className="font-display font-bold text-foreground mb-3 text-gold">Gotera Branch (Main Showroom)</h3>
+                      <h3 className="font-display font-bold text-foreground mb-3 text-gold">{t("contact.gotera")}</h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-start gap-3">
                           <MapPin className="h-4 w-4 text-gold mt-0.5 flex-shrink-0" />
-                          <p className="text-muted-foreground">Around Agona Cinema, on the road leading toward Meskel Flower (Kirkos / Nifas Silk area)</p>
+                          <p className="text-muted-foreground">{t("contact.goteraAddr")}</p>
                         </div>
                         <div className="flex items-center gap-3">
                           <Phone className="h-4 w-4 text-gold flex-shrink-0" />
@@ -145,11 +148,11 @@ const Contact = () => {
 
                     {/* Gurd Shola Branch */}
                     <div className="bg-card border border-border rounded-xl p-5">
-                      <h3 className="font-display font-bold text-foreground mb-3 text-gold">Gurd Shola Branch</h3>
+                      <h3 className="font-display font-bold text-foreground mb-3 text-gold">{t("contact.gurdShola")}</h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-start gap-3">
                           <MapPin className="h-4 w-4 text-gold mt-0.5 flex-shrink-0" />
-                          <p className="text-muted-foreground">Beside Top Ten Hotel</p>
+                          <p className="text-muted-foreground">{t("contact.gurdSholaAddr")}</p>
                         </div>
                         <div className="flex items-center gap-3">
                           <Phone className="h-4 w-4 text-gold flex-shrink-0" />
@@ -160,11 +163,11 @@ const Contact = () => {
 
                     {/* Mekanisa Branch */}
                     <div className="bg-card border border-border rounded-xl p-5">
-                      <h3 className="font-display font-bold text-foreground mb-3 text-gold">Mekanisa Branch</h3>
+                      <h3 className="font-display font-bold text-foreground mb-3 text-gold">{t("contact.mekanisa")}</h3>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-start gap-3">
                           <MapPin className="h-4 w-4 text-gold mt-0.5 flex-shrink-0" />
-                          <p className="text-muted-foreground">Opposite the Mekanisa Condominium complex</p>
+                          <p className="text-muted-foreground">{t("contact.mekanisaAddr")}</p>
                         </div>
                       </div>
                     </div>
@@ -172,11 +175,11 @@ const Contact = () => {
                     {/* General Contact */}
                     <div className="space-y-5 pt-4">
                       {[
-                        { icon: Mail, label: "Email", value: "info@solinasofa.com" },
-                        { icon: Clock, label: "Hours", value: "Mon - Sat: 9:00 AM - 7:00 PM" },
+                        { icon: Mail, labelKey: "contact.emailLabel", value: "info@solinasofa.com" },
+                        { icon: Clock, labelKey: "contact.hours", value: "contact.hoursValue" },
                       ].map((item, i) => (
                         <motion.div
-                          key={item.label}
+                          key={item.labelKey}
                           initial={{ opacity: 0, x: 20 }}
                           whileInView={{ opacity: 1, x: 0 }}
                           viewport={{ once: true }}
@@ -187,8 +190,8 @@ const Contact = () => {
                             <item.icon className="h-5 w-5 text-gold" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-foreground">{item.label}</p>
-                            <p className="text-sm text-muted-foreground">{item.value}</p>
+                            <p className="text-sm font-medium text-foreground">{t(item.labelKey)}</p>
+                            <p className="text-sm text-muted-foreground">{t(item.value)}</p>
                           </div>
                         </motion.div>
                       ))}

@@ -4,13 +4,7 @@ import { motion } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageTransition from "@/components/PageTransition";
 import { useEffect, useRef, useState } from "react";
-
-const stats = [
-  { num: 10, suffix: "+", label: "Years Experience" },
-  { num: 5000, suffix: "+", label: "Happy Customers" },
-  { num: 200, suffix: "+", label: "Designs Available" },
-  { num: 50, suffix: "+", label: "Custom Projects/Month" },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const CountUp = ({ target, suffix }: { target: number; suffix: string }) => {
   const [count, setCount] = useState(0);
@@ -54,6 +48,15 @@ const CountUp = ({ target, suffix }: { target: number; suffix: string }) => {
 };
 
 const About = () => {
+  const { t } = useLanguage();
+
+  const stats = [
+    { num: 10, suffix: "+", labelKey: "about.years" },
+    { num: 5000, suffix: "+", labelKey: "about.customers" },
+    { num: 200, suffix: "+", labelKey: "about.designs" },
+    { num: 50, suffix: "+", labelKey: "about.projects" },
+  ];
+
   return (
     <PageTransition>
       <div className="pt-20 md:pt-24">
@@ -67,7 +70,7 @@ const About = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-gold text-sm tracking-[0.3em] uppercase font-medium mb-3"
             >
-              Our Story
+              {t("about.badge")}
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -75,7 +78,7 @@ const About = () => {
               transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl font-display font-bold"
             >
-              About Solina
+              {t("about.title")}
             </motion.h1>
           </div>
         </section>
@@ -84,19 +87,19 @@ const About = () => {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20">
               <AnimatedSection direction="left">
-                <p className="text-gold text-sm tracking-[0.3em] uppercase font-medium mb-3">Since 2014</p>
+                <p className="text-gold text-sm tracking-[0.3em] uppercase font-medium mb-3">{t("about.since")}</p>
                 <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-6">
-                  A Decade of Ethiopian Craftsmanship
+                  {t("about.decadeTitle")}
                 </h2>
                 <div className="space-y-4 text-muted-foreground leading-relaxed">
                   <p>
-                    Founded in Addis Ababa, Solina Furniture has spent over a decade perfecting the art of furniture making. What started as a small workshop has grown into one of Ethiopia's most trusted furniture brands.
+                    {t("about.p1")}
                   </p>
                   <p>
-                    Every piece we create combines modern design with traditional Ethiopian craftsmanship. Our skilled artisans use only premium materials — genuine leather, solid hardwood frames, and luxurious fabrics — to ensure every sofa, bed, and desk meets our exacting standards.
+                    {t("about.p2")}
                   </p>
                   <p>
-                    We believe furniture is more than function — it's an expression of who you are. That's why we offer fully custom designs, allowing you to create furniture that perfectly matches your vision and space.
+                    {t("about.p3")}
                   </p>
                 </div>
               </AnimatedSection>
@@ -115,16 +118,16 @@ const About = () => {
               </AnimatedSection>
               <AnimatedSection direction="right" className="order-1 lg:order-2">
                 <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-6">
-                  Visit Our Showroom
+                  {t("about.showroomTitle")}
                 </h2>
                 <p className="text-muted-foreground leading-relaxed mb-8">
-                  Experience our furniture in person at our Bole showroom in Addis Ababa. Our team is ready to help you find or design the perfect piece for your home or office.
+                  {t("about.showroomDesc")}
                 </p>
                 <div className="grid grid-cols-2 gap-6">
                   {stats.map((stat) => (
-                    <div key={stat.label}>
+                    <div key={stat.labelKey}>
                       <CountUp target={stat.num} suffix={stat.suffix} />
-                      <p className="text-sm text-muted-foreground mt-1">{stat.label}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{t(stat.labelKey)}</p>
                     </div>
                   ))}
                 </div>

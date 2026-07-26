@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { Product } from "@/data/products";
 
 export interface CartItem {
@@ -9,7 +9,7 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product, color?: string) => void;
+  addToCart: (product: Product, color?: string, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -21,23 +21,38 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const CART_STORAGE_KEY = "solina_cart";
+
 const parsePrice = (price: string) => parseInt(price.replace(/[^0-9]/g, ""));
 
+const loadCart = (): CartItem[] => {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(loadCart);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const addToCart = useCallback((product: Product, color?: string) => {
+  useEffect(() => {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
+
+  const addToCart = useCallback((product: Product, color?: string, quantity: number = 1) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
         return prev.map((i) =>
           i.product.id === product.id
-            ? { ...i, quantity: i.quantity + 1, selectedColor: color || i.selectedColor }
+            ? { ...i, quantity: i.quantity + quantity, selectedColor: color || i.selectedColor }
             : i
         );
       }
-      return [...prev, { product, quantity: 1, selectedColor: color || product.colors[0] }];
+      return [...prev, { product, quantity, selectedColor: color || product.colors[0] }];
     });
     setIsCartOpen(true);
   }, []);

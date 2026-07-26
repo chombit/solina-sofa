@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Phone, Search, SlidersHorizontal, ShoppingCart, Heart } from "lucide-react";
+import { Search, SlidersHorizontal, ShoppingCart, Heart } from "lucide-react";
 import { products, categories } from "@/data/products";
 import { motion, AnimatePresence } from "framer-motion";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -9,6 +9,7 @@ import PageTransition from "@/components/PageTransition";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Products = () => {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -17,6 +18,7 @@ const Products = () => {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const filtered = useMemo(() => {
     let result = activeCategory === "All"
@@ -59,7 +61,7 @@ const Products = () => {
               transition={{ duration: 0.5 }}
               className="text-gold text-sm tracking-[0.3em] uppercase font-medium mb-3"
             >
-              Our Collection
+              {t("products.badge")}
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -67,7 +69,7 @@ const Products = () => {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-6xl font-display font-bold"
             >
-              Furniture Catalog
+              {t("products.title")}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -75,7 +77,7 @@ const Products = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-primary-foreground/70 mt-4 max-w-lg mx-auto"
             >
-              Explore our range of handcrafted sofas, beds, and office furniture.
+              {t("products.desc")}
             </motion.p>
           </div>
         </section>
@@ -90,7 +92,7 @@ const Products = () => {
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <input
                     type="text"
-                    placeholder="Search furniture..."
+                    placeholder={t("products.search")}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-11 pr-4 py-3 rounded-full bg-card border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
@@ -104,9 +106,9 @@ const Products = () => {
                     onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                     className="pl-11 pr-8 py-3 rounded-full bg-card border border-border text-foreground text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring"
                   >
-                    <option value="default">Sort by</option>
-                    <option value="price-low">Price: Low → High</option>
-                    <option value="price-high">Price: High → Low</option>
+                    <option value="default">{t("products.sort")}</option>
+                    <option value="price-low">{t("products.sortLow")}</option>
+                    <option value="price-high">{t("products.sortHigh")}</option>
                   </select>
                 </div>
               </div>
@@ -133,7 +135,7 @@ const Products = () => {
 
             {/* Product count */}
             <p className="text-sm text-muted-foreground text-center mb-8">
-              Showing {filtered.length} {filtered.length === 1 ? "product" : "products"}
+              {t("products.showing")} {filtered.length} {filtered.length === 1 ? t("products.product") : t("products.products")}
             </p>
 
             {/* Product grid */}
@@ -162,6 +164,7 @@ const Products = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                         {/* Wishlist button */}
                         <button
+                          aria-label={isInWishlist(product.id) ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -202,11 +205,11 @@ const Products = () => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 addToCart(product);
-                                toast({ title: "Added to cart!", description: product.name });
+                                toast({ title: t("products.added"), description: product.name });
                               }}
                             >
                               <ShoppingCart className="h-3.5 w-3.5" />
-                              Add
+                              {t("products.add")}
                             </Button>
                           </div>
                         </div>
@@ -219,24 +222,23 @@ const Products = () => {
 
             {filtered.length === 0 && (
               <AnimatedSection className="text-center py-16">
-                <p className="text-2xl font-display font-bold text-foreground mb-2">No products found</p>
-                <p className="text-muted-foreground">Try a different search or category.</p>
+                <p className="text-2xl font-display font-bold text-foreground mb-2">{t("products.noResults")}</p>
+                <p className="text-muted-foreground">{t("products.noResultsDesc")}</p>
               </AnimatedSection>
             )}
 
-            {/* WhatsApp CTA */}
+            {/* Telegram CTA */}
             <AnimatedSection className="text-center mt-16">
               <div className="p-10 bg-secondary rounded-2xl border border-border relative overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl" />
                 </div>
                 <div className="relative">
-                  <h3 className="font-display text-2xl font-bold text-foreground mb-3">Don't see what you're looking for?</h3>
-                  <p className="text-muted-foreground mb-6">We create custom furniture. Tell us your dream design!</p>
-                  <a href="https://wa.me/251900000000?text=Hi%20Solina!%20I%27m%20interested%20in%20custom%20furniture" target="_blank" rel="noopener noreferrer">
-                    <Button variant="whatsapp" size="lg" className="gap-2">
-                      <Phone className="h-5 w-5" />
-                      Request Custom Order
+                  <h3 className="font-display text-2xl font-bold text-foreground mb-3">{t("products.customTitle")}</h3>
+                  <p className="text-muted-foreground mb-6">{t("products.customDesc")}</p>
+                  <a href="https://t.me/solinahomes?text=Hi%20Solina!%20I%27m%20interested%20in%20custom%20furniture" target="_blank" rel="noopener noreferrer">
+                    <Button variant="telegram" size="lg" className="gap-2">
+                      {t("products.customCta")}
                     </Button>
                   </a>
                 </div>

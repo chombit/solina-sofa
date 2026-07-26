@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, ArrowLeft, Check, Heart } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Check, Heart, Minus, Plus, ChevronRight, Home } from "lucide-react";
 import { products } from "@/data/products";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -8,22 +8,25 @@ import PageTransition from "@/components/PageTransition";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
   const [imageLoaded, setImageLoaded] = useState(false);
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   if (!product) {
     return (
       <div className="pt-32 text-center container mx-auto px-4">
-        <h1 className="text-3xl font-display font-bold text-foreground mb-4">Product Not Found</h1>
+        <h1 className="text-3xl font-display font-bold text-foreground mb-4">{t("product.notFound")}</h1>
         <Link to="/products">
-          <Button variant="gold">Back to Products</Button>
+          <Button variant="gold">{t("product.back")}</Button>
         </Link>
       </div>
     );
@@ -34,24 +37,33 @@ const ProductDetail = () => {
   const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 3);
 
   const handleAddToCart = () => {
-    addToCart(product, activeColor);
-    toast({ title: "Added to cart!", description: `${product.name} in ${activeColor}` });
+    addToCart(product, activeColor, quantity);
+    toast({ title: t("product.addedToCart"), description: `${product.name} (${quantity}x)` });
   };
 
   return (
     <PageTransition>
       <div className="pt-20 md:pt-24">
         <div className="container mx-auto px-4 py-12">
-          <motion.div
+          {/* Breadcrumbs */}
+          <motion.nav
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
+            className="flex items-center gap-2 text-sm text-muted-foreground mb-8 flex-wrap"
+            aria-label="Breadcrumb"
           >
-            <Link to="/products" className="inline-flex items-center gap-2 text-muted-foreground hover:text-gold transition-colors mb-8">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Products
+            <Link to="/" className="hover:text-gold transition-colors flex items-center gap-1">
+              <Home className="h-3.5 w-3.5" />
+              {t("nav.home")}
             </Link>
-          </motion.div>
+            <ChevronRight className="h-3 w-3" />
+            <Link to="/products" className="hover:text-gold transition-colors">
+              {t("nav.products")}
+            </Link>
+            <ChevronRight className="h-3 w-3" />
+            <span className="text-gold font-medium">{product.name}</span>
+          </motion.nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Image */}
@@ -76,6 +88,7 @@ const ProductDetail = () => {
                 </span>
               </div>
               <button
+                aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
                 onClick={() => toggleWishlist(product)}
                 className={`absolute top-4 right-4 h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                   inWishlist
@@ -101,15 +114,15 @@ const ProductDetail = () => {
 
               <div className="space-y-5 mb-8">
                 <div className="flex items-start gap-3">
-                  <span className="text-sm font-semibold text-foreground min-w-[80px]">Materials:</span>
+                  <span className="text-sm font-semibold text-foreground min-w-[80px]">{t("product.materials")}</span>
                   <span className="text-sm text-muted-foreground">{product.materials}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-sm font-semibold text-foreground min-w-[80px]">Size:</span>
+                  <span className="text-sm font-semibold text-foreground min-w-[80px]">{t("product.size")}</span>
                   <span className="text-sm text-muted-foreground">{product.sizes}</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-sm font-semibold text-foreground min-w-[80px]">Colors:</span>
+                  <span className="text-sm font-semibold text-foreground min-w-[80px]">{t("product.colors")}</span>
                   <div className="flex flex-wrap gap-2">
                     {product.colors.map((color) => (
                       <button
@@ -129,6 +142,28 @@ const ProductDetail = () => {
                 </div>
               </div>
 
+              {/* Quantity selector */}
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-sm font-semibold text-foreground">{t("product.quantity")}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    aria-label="Decrease quantity"
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center hover:bg-gold/10 transition-colors"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <span className="w-8 text-center font-medium text-foreground">{quantity}</span>
+                  <button
+                    aria-label="Increase quantity"
+                    onClick={() => setQuantity((q) => Math.min(10, q + 1))}
+                    className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center hover:bg-gold/10 transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
               <div className="flex gap-3">
                 <Button
                   variant="gold"
@@ -137,7 +172,7 @@ const ProductDetail = () => {
                   onClick={handleAddToCart}
                 >
                   <ShoppingCart className="h-5 w-5 group-hover:animate-pulse" />
-                  Add to Cart
+                  {t("product.addToCart")}
                 </Button>
                 <Button
                   variant={inWishlist ? "destructive" : "outline"}
@@ -146,7 +181,7 @@ const ProductDetail = () => {
                   onClick={() => toggleWishlist(product)}
                 >
                   <Heart className={`h-5 w-5 ${inWishlist ? "fill-current" : ""}`} />
-                  {inWishlist ? "Saved" : "Wishlist"}
+                  {inWishlist ? t("product.saved") : t("product.wishlist")}
                 </Button>
               </div>
             </motion.div>
@@ -161,7 +196,7 @@ const ProductDetail = () => {
               transition={{ duration: 0.6 }}
               className="mt-20"
             >
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-8">You May Also Like</h2>
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-8">{t("product.related")}</h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {related.map((p) => (
                   <Link
@@ -184,6 +219,22 @@ const ProductDetail = () => {
                   </Link>
                 ))}
               </div>
+            </motion.div>
+          )}
+
+          {related.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mt-20 text-center"
+            >
+              <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-4">{t("product.exploreMore")}</h2>
+              <p className="text-muted-foreground mb-6">{t("product.exploreDesc")}</p>
+              <Link to="/products">
+                <Button variant="gold">{t("product.browseAll")}</Button>
+              </Link>
             </motion.div>
           )}
         </div>

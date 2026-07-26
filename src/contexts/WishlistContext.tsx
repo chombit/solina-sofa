@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { Product } from "@/data/products";
 
 interface WishlistContextType {
@@ -11,8 +11,23 @@ interface WishlistContextType {
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
+const WISHLIST_STORAGE_KEY = "solina_wishlist";
+
+const loadWishlist = (): Product[] => {
+  try {
+    const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+};
+
 export const WishlistProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<Product[]>([]);
+  const [items, setItems] = useState<Product[]>(loadWishlist);
+
+  useEffect(() => {
+    localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
 
   const addToWishlist = useCallback((product: Product) => {
     setItems((prev) => (prev.find((p) => p.id === product.id) ? prev : [...prev, product]));

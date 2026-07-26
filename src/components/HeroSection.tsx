@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import heroImage from "@/assets/hero-sofa.jpg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const HeroSection = () => {
+  const { t } = useLanguage();
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Parallax background */}
@@ -40,7 +42,7 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-gold font-body text-sm md:text-base tracking-[0.3em] uppercase mb-4"
           >
-            Handcrafted in Addis Ababa
+            {t("hero.badge")}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -48,9 +50,9 @@ const HeroSection = () => {
             transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-cream leading-tight mb-6"
           >
-            Where Comfort
+            {t("hero.title1")}
             <br />
-            Meets <span className="text-gradient-gold italic">Elegance</span>
+            {t("hero.title2")} <span className="text-gradient-gold italic">{t("hero.titleHighlight")}</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -58,7 +60,7 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.7 }}
             className="text-cream/70 text-lg md:text-xl font-body leading-relaxed mb-10 max-w-lg"
           >
-            Premium sofas and furniture crafted with Ethiopian artistry. Designed for your lifestyle, built to last generations.
+            {t("hero.desc")}
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -68,13 +70,13 @@ const HeroSection = () => {
           >
             <Link to="/products">
               <Button variant="hero" size="lg" className="gap-2 group">
-                Explore Collection
+                {t("hero.explore")}
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Link to="/contact">
               <Button variant="gold-outline" size="lg" className="text-base px-8 py-3 h-auto border-cream/30 text-cream hover:bg-cream/10 hover:text-cream">
-                Visit Showroom
+                {t("hero.visit")}
               </Button>
             </Link>
           </motion.div>

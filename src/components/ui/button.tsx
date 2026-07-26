@@ -19,6 +19,7 @@ const buttonVariants = cva(
         "gold-outline": "border-2 border-gold text-gold hover:bg-gold hover:text-accent-foreground font-semibold tracking-wide",
         hero: "bg-gold text-accent-foreground hover:bg-gold-dark font-semibold tracking-wide text-base px-8 py-3 h-auto",
         whatsapp: "bg-[hsl(142,70%,40%)] text-accent-foreground hover:bg-[hsl(142,70%,35%)] font-semibold",
+        telegram: "bg-[hsl(210,100%,50%)] text-white hover:bg-[hsl(210,100%,45%)] font-semibold",
       },
       size: {
         default: "h-10 px-4 py-2",

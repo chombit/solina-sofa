@@ -1,23 +1,65 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import PageTransition from "@/components/PageTransition";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
+  const { signIn, signUp, user } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  if (user) {
+    return (
+      <PageTransition>
+        <div className="pt-20 min-h-screen flex items-center justify-center bg-gradient-section">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-display font-bold text-foreground">
+              {t("auth.welcome") + ", " + user.name + "!"}
+            </h2>
+            <p className="text-muted-foreground">{t("auth.alreadySignedIn")}</p>
+            <Button variant="gold" onClick={() => navigate("/account")}>
+              {t("auth.goToAccount")}
+            </Button>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: isLogin ? "Welcome back!" : "Account created!",
-      description: "Authentication will be connected to the backend soon.",
-    });
+    setSubmitting(true);
+
+    const success = isLogin
+      ? await signIn(form.email, form.password)
+      : await signUp(form.name, form.email, form.password);
+
+    setSubmitting(false);
+
+    if (success) {
+      toast({
+        title: isLogin ? t("auth.welcomeBack") : t("auth.createAccount"),
+        description: isLogin ? "You are now signed in." : "Welcome to Solina Furniture.",
+      });
+      navigate("/account");
+    } else {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -39,7 +81,7 @@ const Auth = () => {
                     isLogin ? "bg-gold text-accent-foreground shadow-md" : "text-muted-foreground"
                   }`}
                 >
-                  Sign In
+                  {t("auth.signIn")}
                 </button>
                 <button
                   onClick={() => setIsLogin(false)}
@@ -47,7 +89,7 @@ const Auth = () => {
                     !isLogin ? "bg-gold text-accent-foreground shadow-md" : "text-muted-foreground"
                   }`}
                 >
-                  Sign Up
+                  {t("auth.signUp")}
                 </button>
               </div>
 
@@ -60,12 +102,12 @@ const Auth = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                    {isLogin ? "Welcome Back" : "Create Account"}
+                    {isLogin ? t("auth.welcomeBack") : t("auth.createAccount")}
                   </h2>
                   <p className="text-muted-foreground text-sm mb-6">
                     {isLogin
-                      ? "Sign in to view your orders and wishlist"
-                      : "Join Solina for exclusive furniture deals"}
+                      ? t("auth.signInDesc")
+                      : t("auth.signUpDesc")}
                   </p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
@@ -73,7 +115,7 @@ const Auth = () => {
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
-                          placeholder="Full Name"
+                          placeholder={t("auth.fullName")}
                           value={form.name}
                           onChange={(e) => setForm({ ...form, name: e.target.value })}
                           className="pl-10 h-12 rounded-xl bg-secondary border-border"
@@ -86,7 +128,7 @@ const Auth = () => {
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="email"
-                        placeholder="Email Address"
+                        placeholder={t("auth.email")}
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                         className="pl-10 h-12 rounded-xl bg-secondary border-border"
@@ -98,7 +140,7 @@ const Auth = () => {
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Password"
+                        placeholder={t("auth.password")}
                         value={form.password}
                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                         className="pl-10 pr-10 h-12 rounded-xl bg-secondary border-border"
@@ -118,14 +160,20 @@ const Auth = () => {
                     {isLogin && (
                       <div className="text-right">
                         <button type="button" className="text-xs text-gold hover:underline">
-                          Forgot password?
+                          {t("auth.forgot")}
                         </button>
                       </div>
                     )}
 
-                    <Button variant="gold" size="lg" className="w-full h-12 gap-2 group">
-                      {isLogin ? "Sign In" : "Create Account"}
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    <Button variant="gold" size="lg" className="w-full h-12 gap-2 group" disabled={submitting}>
+                      {submitting ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          {isLogin ? t("auth.signIn") : t("auth.createAccount")}
+                          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </>
+                      )}
                     </Button>
                   </form>
 
@@ -135,7 +183,7 @@ const Auth = () => {
                         <div className="w-full border-t border-border" />
                       </div>
                       <div className="relative flex justify-center text-xs">
-                        <span className="bg-card px-3 text-muted-foreground">or continue with</span>
+                        <span className="bg-card px-3 text-muted-foreground">{t("auth.orContinue")}</span>
                       </div>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-3">
@@ -158,13 +206,13 @@ const Auth = () => {
                             fill="#EA4335"
                           />
                         </svg>
-                        Google
+                        {t("auth.google")}
                       </Button>
                       <Button variant="outline" className="h-11 rounded-xl">
                         <svg className="h-4 w-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                         </svg>
-                        Apple
+                        {t("auth.apple")}
                       </Button>
                     </div>
                   </div>

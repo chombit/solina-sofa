@@ -4,17 +4,19 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { products } from "@/data/products";
 import AnimatedSection from "./AnimatedSection";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const FeaturedProducts = () => {
+  const { t } = useLanguage();
   const featured = products.slice(0, 4);
 
   return (
     <section className="py-20 md:py-28 bg-gradient-section">
       <div className="container mx-auto px-4">
         <AnimatedSection className="text-center mb-16">
-          <p className="text-gold text-sm tracking-[0.3em] uppercase font-medium mb-3">Our Collection</p>
+          <p className="text-gold text-sm tracking-[0.3em] uppercase font-medium mb-3">{t("featured.badge")}</p>
           <h2 className="text-3xl md:text-5xl font-display font-bold text-foreground">
-            Featured Furniture
+            {t("featured.title")}
           </h2>
         </AnimatedSection>
 
@@ -44,7 +46,7 @@ const FeaturedProducts = () => {
                     initial={false}
                   >
                     <span className="inline-block bg-gold text-accent-foreground text-xs font-semibold px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                      View Details →
+                      {t("featured.viewDetails")}
                     </span>
                   </motion.div>
                 </div>
@@ -61,7 +63,7 @@ const FeaturedProducts = () => {
         <AnimatedSection className="text-center mt-12" delay={0.3}>
           <Link to="/products">
             <Button variant="gold" size="lg" className="gap-2 group">
-              View All Products
+              {t("featured.viewAll")}
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>

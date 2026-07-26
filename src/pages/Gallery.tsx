@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import gallery1 from "@/assets/gallery-1.jpg";
 import gallery2 from "@/assets/gallery-2.jpg";
 import heroSofa from "@/assets/hero-sofa.jpg";
@@ -9,6 +9,7 @@ import productSofa1 from "@/assets/product-sofa-1.jpg";
 import productSofa4 from "@/assets/product-sofa-4.jpg";
 import AnimatedSection from "@/components/AnimatedSection";
 import PageTransition from "@/components/PageTransition";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const images = [
   { src: gallery1, caption: "Modern Living Room Setup", category: "Living Room" },
@@ -20,7 +21,38 @@ const images = [
 ];
 
 const Gallery = () => {
+  const { t } = useLanguage();
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
+
+  const goNext = useCallback(() => {
+    setSelectedImage((prev) => (prev !== null ? (prev + 1) % images.length : null));
+  }, []);
+
+  const goPrev = useCallback(() => {
+    setSelectedImage((prev) => (prev !== null ? (prev - 1 + images.length) % images.length : null));
+  }, []);
+
+  const closeLightbox = useCallback(() => {
+    setSelectedImage(null);
+  }, []);
+
+  useEffect(() => {
+    if (selectedImage === null) return;
+
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedImage, goNext, goPrev, closeLightbox]);
 
   return (
     <PageTransition>
@@ -35,7 +67,7 @@ const Gallery = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-gold text-sm tracking-[0.3em] uppercase font-medium mb-3"
             >
-              Our Work
+              {t("gallery.badge")}
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -43,7 +75,7 @@ const Gallery = () => {
               transition={{ delay: 0.1 }}
               className="text-4xl md:text-6xl font-display font-bold"
             >
-              Gallery
+              {t("gallery.title")}
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -51,14 +83,13 @@ const Gallery = () => {
               transition={{ delay: 0.2 }}
               className="text-primary-foreground/70 mt-4 max-w-lg mx-auto"
             >
-              Browse our completed projects and showroom displays.
+              {t("gallery.desc")}
             </motion.p>
           </div>
         </section>
 
         <section className="py-12 md:py-16">
           <div className="container mx-auto px-4">
-            {/* Masonry-style grid */}
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
               {images.map((img, i) => (
                 <motion.div
@@ -92,7 +123,6 @@ const Gallery = () => {
           </div>
         </section>
 
-        {/* Lightbox */}
         <AnimatePresence>
           {selectedImage !== null && (
             <motion.div
@@ -100,15 +130,34 @@ const Gallery = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-50 bg-charcoal/95 backdrop-blur-xl flex items-center justify-center p-4"
-              onClick={() => setSelectedImage(null)}
+              onClick={closeLightbox}
             >
               <button
+                aria-label="Close lightbox"
                 className="absolute top-6 right-6 text-cream/70 hover:text-cream transition-colors z-50"
-                onClick={() => setSelectedImage(null)}
+                onClick={closeLightbox}
               >
                 <X className="h-8 w-8" />
               </button>
+
+              <button
+                aria-label="Previous image"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-cream/50 hover:text-cream transition-colors z-50 p-2 rounded-full hover:bg-cream/10"
+                onClick={(e) => { e.stopPropagation(); goPrev(); }}
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </button>
+
+              <button
+                aria-label="Next image"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-cream/50 hover:text-cream transition-colors z-50 p-2 rounded-full hover:bg-cream/10"
+                onClick={(e) => { e.stopPropagation(); goNext(); }}
+              >
+                <ChevronRight className="h-8 w-8" />
+              </button>
+
               <motion.img
+                key={selectedImage}
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.8, opacity: 0 }}
