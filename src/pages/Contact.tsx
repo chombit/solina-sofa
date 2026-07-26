@@ -19,7 +19,7 @@ const Contact = () => {
     setSending(true);
     setTimeout(() => {
       const msg = encodeURIComponent(`Name: ${form.name}\nPhone: ${form.phone}\nEmail: ${form.email}\nMessage: ${form.message}`);
-      window.open(`https://wa.me/251900000000?text=${msg}`, "_blank");
+      window.open(`https://wa.me/251911233391?text=${msg}`, "_blank");
       toast.success("Opening WhatsApp...");
       setSending(false);
     }, 500);
@@ -122,46 +122,92 @@ const Contact = () => {
               {/* Contact Info */}
               <AnimatedSection direction="right" className="space-y-8">
                 <div>
-                  <h2 className="font-display text-2xl font-bold text-foreground mb-6">Contact Information</h2>
-                  <div className="space-y-5">
-                    {[
-                      { icon: Phone, label: "Phone", value: "+251 900 000 000" },
-                      { icon: Mail, label: "Email", value: "info@solinasofa.com" },
-                      { icon: MapPin, label: "Address", value: "Bole, Addis Ababa, Ethiopia" },
-                      { icon: Clock, label: "Hours", value: "Mon - Sat: 9:00 AM - 7:00 PM" },
-                    ].map((item, i) => (
-                      <motion.div
-                        key={item.label}
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.1 }}
-                        className="flex items-start gap-4 group"
-                      >
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold/10 to-gold/20 flex items-center justify-center flex-shrink-0 group-hover:shadow-lg group-hover:shadow-gold/10 transition-shadow duration-300">
-                          <item.icon className="h-5 w-5 text-gold" />
+                  <h2 className="font-display text-2xl font-bold text-foreground mb-6">Showroom Locations</h2>
+                  <div className="space-y-6">
+                    {/* Gotera Branch - Main */}
+                    <div className="bg-card border border-border rounded-xl p-5">
+                      <h3 className="font-display font-bold text-foreground mb-3 text-gold">Gotera Branch (Main Showroom)</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-start gap-3">
+                          <MapPin className="h-4 w-4 text-gold mt-0.5 flex-shrink-0" />
+                          <p className="text-muted-foreground">Around Agona Cinema, on the road leading toward Meskel Flower (Kirkos / Nifas Silk area)</p>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">{item.label}</p>
-                          <p className="text-sm text-muted-foreground">{item.value}</p>
+                        <div className="flex items-center gap-3">
+                          <Phone className="h-4 w-4 text-gold flex-shrink-0" />
+                          <p className="text-muted-foreground">+251 114 701 949</p>
                         </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
+                        <div className="flex items-center gap-3">
+                          <Phone className="h-4 w-4 text-gold flex-shrink-0" />
+                          <p className="text-muted-foreground">+251 911 233 391 / +251 903 787 878 / +251 911 223 105</p>
+                        </div>
+                      </div>
+                    </div>
 
-                {/* Google Maps Embed */}
-                <div className="rounded-2xl overflow-hidden border border-border shadow-lg">
-                  <iframe
-                    title="Solina Showroom Location"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3940.5!2d38.7893!3d9.0054!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwMDAnMTkuNCJOIDM4wrA0NycyMS41IkU!5e0!3m2!1sen!2set!4v1234567890"
-                    width="100%"
-                    height="300"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  />
+                    {/* Gurd Shola Branch */}
+                    <div className="bg-card border border-border rounded-xl p-5">
+                      <h3 className="font-display font-bold text-foreground mb-3 text-gold">Gurd Shola Branch</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-start gap-3">
+                          <MapPin className="h-4 w-4 text-gold mt-0.5 flex-shrink-0" />
+                          <p className="text-muted-foreground">Beside Top Ten Hotel</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Phone className="h-4 w-4 text-gold flex-shrink-0" />
+                          <p className="text-muted-foreground">+251 978 787 836</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mekanisa Branch */}
+                    <div className="bg-card border border-border rounded-xl p-5">
+                      <h3 className="font-display font-bold text-foreground mb-3 text-gold">Mekanisa Branch</h3>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-start gap-3">
+                          <MapPin className="h-4 w-4 text-gold mt-0.5 flex-shrink-0" />
+                          <p className="text-muted-foreground">Opposite the Mekanisa Condominium complex</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* General Contact */}
+                    <div className="space-y-5 pt-4">
+                      {[
+                        { icon: Mail, label: "Email", value: "info@solinasofa.com" },
+                        { icon: Clock, label: "Hours", value: "Mon - Sat: 9:00 AM - 7:00 PM" },
+                      ].map((item, i) => (
+                        <motion.div
+                          key={item.label}
+                          initial={{ opacity: 0, x: 20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1 }}
+                          className="flex items-start gap-4 group"
+                        >
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gold/10 to-gold/20 flex items-center justify-center flex-shrink-0 group-hover:shadow-lg group-hover:shadow-gold/10 transition-shadow duration-300">
+                            <item.icon className="h-5 w-5 text-gold" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">{item.label}</p>
+                            <p className="text-sm text-muted-foreground">{item.value}</p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* Google Maps Embed */}
+                    <div className="rounded-2xl overflow-hidden border border-border shadow-lg">
+                      <iframe
+                        title="Solina Showroom Location"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3940.5!2d38.7893!3d9.0054!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwMDAnMTkuNCJOIDM4wrA0NycyMS41IkU!5e0!3m2!1sen!2set!4v1234567890"
+                        width="100%"
+                        height="300"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
+                  </div>
                 </div>
               </AnimatedSection>
             </div>
