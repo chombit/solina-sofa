@@ -129,8 +129,15 @@ const Navbar = () => {
             </a>
           </div>
 
-          {/* Mobile: cart + hamburger on right */}
+          {/* Mobile: lang toggle + cart + hamburger on right */}
           <div className="flex md:hidden items-center gap-1">
+            <button
+              aria-label="Toggle language"
+              onClick={toggleLanguage}
+              className="px-2 py-1 rounded-full text-[11px] font-bold border border-border hover:border-gold hover:text-gold transition-colors text-muted-foreground"
+            >
+              {t("lang.toggle")}
+            </button>
             <button
               aria-label="Open shopping cart"
               onClick={() => setIsCartOpen(true)}
@@ -185,13 +192,6 @@ const Navbar = () => {
                 );
               })}
               <div className="flex gap-3 mt-2">
-                <button
-                  aria-label="Toggle language"
-                  onClick={toggleLanguage}
-                  className="px-4 py-2.5 rounded-full text-sm font-bold border border-border hover:border-gold hover:text-gold transition-colors text-muted-foreground"
-                >
-                  {t("lang.toggle")}
-                </button>
                 <Link to="/account" onClick={() => setIsOpen(false)} className="flex-1">
                   <Button variant="outline" className="w-full gap-2">
                     <User className="h-4 w-4" /> {t("nav.account")}
